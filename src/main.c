@@ -17,21 +17,25 @@
 #define GSH_TOKENS_LIST_SIZE        10
 
 char *gluonsh_read_line(void);
-char *gluonsh_get_arguments(char *raw_text);
+char **gluonsh_get_arguments(char *raw_text);
 
 int main (int argc, char **argv) {
-
-    // ! There are not config statements in this shell    
-
-    // TODO: Here there is a tokenize function
-
-    // TODO: Here gluon execs the program in question
 
     // @test Tests go here
 
     char *input = gluonsh_read_line();
-    printf("%s\n", input);
+
+    char **tokens = gluonsh_get_arguments(input); // tokenize function
+    
+    int p = 0;
+
+    while (tokens[p] != NULL) {
+        printf("%s\n", tokens[p]);
+        p++;
+    }
+
     free(input);
+    free(tokens);
 
     return 0;
 }
@@ -88,10 +92,12 @@ char *gluonsh_read_line(void) {
  * 
  * The tokens list must be adapted to execvp.
  * 
+ * The separator is the space character ' '
+ * 
  * TODO: Create the function
 */
 
-char *gluonsh_get_arguments(char *raw_text) {
+char **gluonsh_get_arguments(char *raw_text) {
     // Up to 10 tokens before reallocating
     char **tokens_list = (char**) malloc(sizeof(char**) * GSH_TOKENS_LIST_SIZE);
     int tokens_list_size = GSH_TOKENS_LIST_SIZE;
@@ -109,20 +115,24 @@ char *gluonsh_get_arguments(char *raw_text) {
    while (raw_text[raw_text_position] != '\0') {
         if (raw_text_position == 0) {
             tokens_list[tokens_list_position] = raw_text;
+            tokens_list_position++;
+
+        } else if (raw_text[raw_text_position] == ' ') {
+            raw_text[raw_text_position] = '\0';
+
         } else if (raw_text[raw_text_position - 1] == '\0') {
             tokens_list[tokens_list_position] = raw_text + (raw_text_position * sizeof(char));
             tokens_list_position++;
-        } else if (raw_text[raw_text_position] == ' ') {
-            raw_text[raw_text_position] = '\0';
         }
-        raw_text_position++;
 
         // Reallocation process
         if (tokens_list_position + 1>= tokens_list_size) {
             tokens_list = realloc(tokens_list, tokens_list_size + GSH_TOKENS_LIST_SIZE);
             tokens_list_size += GSH_TOKENS_LIST_SIZE;
         }
+
+        raw_text_position++;
     }
     tokens_list[tokens_list_position] = NULL;
-   
+    return tokens_list;
 }
