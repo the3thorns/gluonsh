@@ -1,0 +1,5 @@
+/home/the3thorns/Escritorio/gluonsh/build/CMakeFiles/edit_cache.dir
+/home/the3thorns/Escritorio/gluonsh/build/CMakeFiles/rebuild_cache.dir
+/home/the3thorns/Escritorio/gluonsh/build/src/CMakeFiles/gluonsh.dir
+/home/the3thorns/Escritorio/gluonsh/build/src/CMakeFiles/edit_cache.dir
+/home/the3thorns/Escritorio/gluonsh/build/src/CMakeFiles/rebuild_cache.dir
