@@ -1,10 +1,6 @@
 /*
-    Name syntax
-    - Project name: gluonsh
-
     Function name: gluonsh_modifier_action
-    Macro name: GSH_PROPERTY_NAME
-    
+    Macro name: GSH_PROPERTY_NAME    
 */
 
 
@@ -19,9 +15,6 @@
 char *gluonsh_read_line(void);
 char **gluonsh_get_arguments(char *raw_text);
 
-/**
- * FIXME: Eliminate initial spaces on user inputW
-*/
 
 int main (int argc, char **argv) {
 
@@ -100,6 +93,7 @@ char *gluonsh_read_line(void) {
  * The tokens list must be adapted to execvp.
  * 
  * The separator is the space character ' '
+ * TODO: Fix function
 */
 
 char **gluonsh_get_arguments(char *raw_text) {
@@ -108,33 +102,29 @@ char **gluonsh_get_arguments(char *raw_text) {
     int tokens_list_size = GSH_TOKENS_LIST_SIZE;
     int tokens_list_position = 0;
     int raw_text_position = 0;
+    
+    while (raw_text[raw_text_position] != '\0') {
+        //printf("Raw_text_pos: %d\n", raw_text_position);
+        //printf("Tokens_list_pos: %d\n", tokens_list_position);
 
-    /**
-     * The function iterates through @param raw_text and looks for leetters that are after spaces
-     * or the first one.
-     * 
-     * When it finds a character it sends the address to tokens_list
-     * There are no initial spaces in @param raw_text
-    */
-
-   while (raw_text[raw_text_position] != '\0') {
         if (raw_text_position == 0) {
             tokens_list[tokens_list_position] = raw_text;
             tokens_list_position++;
-
         } else if (raw_text[raw_text_position] == ' ') {
             raw_text[raw_text_position] = '\0';
         } else if (raw_text[raw_text_position - 1] == '\0') {
-            tokens_list[tokens_list_position] = raw_text + (raw_text_position + sizeof(char));
+            tokens_list[tokens_list_position] = raw_text + (raw_text_position * sizeof(char));
             tokens_list_position++;
         }
         raw_text_position++;
 
+        // reallocation process
         if (tokens_list_position + 1 >= tokens_list_size) {
-            tokens_list = realloc(tokens_list, tokens_list_size + GSH_TOKENS_LIST_SIZE);
             tokens_list_size += GSH_TOKENS_LIST_SIZE;
+            tokens_list = (char**)realloc(tokens_list, tokens_list_size * sizeof(char**));
         }
-   }
-   tokens_list[tokens_list_size] = NULL;
-   return tokens_list;
+    }
+
+    tokens_list[tokens_list_position] = NULL;
+    return tokens_list;
 }
