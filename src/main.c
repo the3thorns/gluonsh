@@ -3,36 +3,29 @@
     Macro name: GSH_PROPERTY_NAME    
 */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+#include <sys/types.h> // fork()
+#include <sys/wait.h>   // wait()
 
 #define GSH_BUFFER_SIZE             64
 #define GSH_TOKENS_LIST_SIZE        10
 
 char *gluonsh_read_line(void);
 char **gluonsh_get_arguments(char *raw_text);
+void gluonsh_exec_program(char **arguments);
 
 
 int main (int argc, char **argv) {
 
-    // @test Tests go here
+    printf("gluonsh >> ");
 
     char *input = gluonsh_read_line();
-
-    //printf("%s(END)\n", input);
-
     char **tokens = gluonsh_get_arguments(input); // tokenize function
-    
-    int p = 0;
+    gluonsh_exec_program(tokens);
 
-    while (tokens[p] != NULL) {
-        printf("%s\n", tokens[p]);
-        p++;
-    }
-
+    // Free both input and tokens
     free(input);
     free(tokens);
 
@@ -127,4 +120,18 @@ char **gluonsh_get_arguments(char *raw_text) {
 
     tokens_list[tokens_list_position] = NULL;
     return tokens_list;
+}
+
+/**
+ * * This function executes the arguments
+*/
+
+void gluonsh_exec_program(char **arguments) {
+    if (fork() == 0) {
+        execvp(arguments[0], arguments);
+        perror("Error execvp");
+        exit(1);
+    } else {
+        wait(NULL);
+    }
 }
